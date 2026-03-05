@@ -1,14 +1,14 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY package*.json ./
+COPY backend/package*.json ./
 RUN npm install
-COPY . .
+COPY backend/src ./src
 
 FROM node:20-alpine AS production
 RUN addgroup -S app && adduser -S app -G app
 WORKDIR /app
-COPY package*.json ./
-RUN npm install --only=production
+COPY backend/package*.json ./
+RUN npm install --omit=dev
 COPY --from=builder /app/src ./src
 RUN chown -R app:app /app
 USER app
