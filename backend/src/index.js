@@ -31,6 +31,7 @@ async function initDB() {
   } catch (e) {
     console.log('ℹ️ Init info:', e.message)
   }
+
   try {
     const hash = await bcrypt.hash('password', 10)
     await pool.query(
@@ -41,6 +42,18 @@ async function initDB() {
     console.log('✅ Mots de passe et comptes mis a jour')
   } catch (e) {
     console.log('❌ Erreur update:', e.message)
+  }
+
+  try {
+    await pool.query(`
+      DELETE FROM predefined_faults
+      WHERE id NOT IN (
+        SELECT MIN(id::text)::uuid FROM predefined_faults GROUP BY name, hotel_id
+      )
+    `)
+    console.log('✅ Doublons nettoyes')
+  } catch (e) {
+    console.log('ℹ️ Nettoyage:', e.message)
   }
 }
 
