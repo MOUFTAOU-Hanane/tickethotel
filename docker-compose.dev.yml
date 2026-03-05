@@ -1,0 +1,75 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: tickethotel_db
+    environment:
+      POSTGRES_DB: tickethotel
+      POSTGRES_USER: tickethotel_user
+      POSTGRES_PASSWORD: devpassword123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/src/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tickethotel_user -d tickethotel"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      target: builder
+    container_name: tickethotel_backend
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: tickethotel
+      DB_USER: tickethotel_user
+      DB_PASSWORD: devpassword123
+      JWT_SECRET: tickethotel-dev-secret-2025
+      JWT_EXPIRY: 24h
+      FRONTEND_URL: http://localhost:5173
+      QR_BASE_URL: http://localhost:5173/public/scan
+      AI_MODE: rules
+      AI_ASSIGNMENT_THRESHOLD: "5"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend/src:/app/src
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: node --watch src/index.js
+
+  frontend:
+    build:
+      context: ./frontend
+      target: builder
+    container_name: tickethotel_frontend
+    environment:
+      VITE_API_URL: http://localhost:3000/api/v1
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+    depends_on:
+      - backend
+    command: npm run dev -- --host 0.0.0.0
+
+  adminer:
+    image: adminer
+    container_name: tickethotel_adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+
+
