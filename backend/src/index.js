@@ -4,6 +4,9 @@ const cors = require('cors')
 const helmet = require('helmet')
 const morgan = require('morgan')
 const rateLimit = require('express-rate-limit')
+const fs = require('fs')
+const path = require('path')
+const pool = require('./config/db')
 const routes = require('./routes')
 
 const app = express()
@@ -20,4 +23,20 @@ app.use((req, res) => res.status(404).json({ error: 'Route non trouvee' }))
 app.use((err, req, res, next) => { console.error(err); res.status(500).json({ error: 'Erreur interne' }) })
 
 const PORT = process.env.PORT || 3000
-app.listen(PORT, () => console.log(`🚀 TicketHotel API sur http://localhost:${PORT}`))
+
+async function initDB() {
+  try {
+    const sql = fs.readFileSync(path.join(__dirname, 'db/init.sql'), 'utf8')
+    await pool.query(sql)
+    console.log('✅ Base de donnees initialisee')
+  } catch (e) {
+    console.log('ℹ️ DB info:', e.message)
+  }
+}
+
+async function start() {
+  await initDB()
+  app.listen(PORT, () => console.log(`🚀 TicketHotel API sur http://localhost:${PORT}`))
+}
+
+start()
