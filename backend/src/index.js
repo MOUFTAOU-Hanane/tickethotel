@@ -28,24 +28,26 @@ async function initDB() {
   try {
     const sql = fs.readFileSync(path.join(__dirname, 'db/init.sql'), 'utf8')
     await pool.query(sql)
-    // Force mise à jour des mots de passe
+    console.log('✅ Base de donnees initialisees')
+  } catch (e) {
+    console.log('ℹ️ Init info:', e.message)
+  }
+
+  try {
     await pool.query(`
       UPDATE users SET password_hash = '$2a$10$mod5UuNNOGaGhR7TslG34.HgG0s8n3ncWJS5LWArO.rvtVxIvOx7W'
-      WHERE email IN (
-        'superadmin@tickethotel.com',
-        'admin@grandbleu.com', 
-        'thomas@grandbleu.com',
-        'sophie@grandbleu.com'
-      )
+      WHERE email IN ('superadmin@tickethotel.com', 'admin@grandbleu.com', 'thomas@grandbleu.com', 'sophie@grandbleu.com')
     `)
-    console.log('✅ Base de donnees initialisee')
+    console.log('✅ Mots de passe mis a jour')
   } catch (e) {
-    console.log('ℹ️ DB info:', e.message)
+    console.log('❌ Erreur UPDATE passwords:', e.message)
   }
 }
 async function start() {
   await initDB()
   app.listen(PORT, () => console.log(`🚀 TicketHotel API sur http://localhost:${PORT}`))
 }
+
+
 
 start()
