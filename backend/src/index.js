@@ -8,6 +8,7 @@ const fs = require('fs')
 const path = require('path')
 const pool = require('./config/db')
 const routes = require('./routes')
+const bcrypt = require('bcryptjs')
 
 const app = express()
 
@@ -16,24 +17,36 @@ app.use(cors({ origin: process.env.FRONTEND_URL || '*', credentials: true }))
 app.use(express.json({ limit: '10mb' }))
 app.use(morgan('dev'))
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 200, message: 'Trop de requetes' }))
-
 app.use('/api/v1', routes)
-
 app.use((req, res) => res.status(404).json({ error: 'Route non trouvee' }))
 app.use((err, req, res, next) => { console.error(err); res.status(500).json({ error: 'Erreur interne' }) })
 
 const PORT = process.env.PORT || 3000
 
-await pool.query(`
-  UPDATE users SET login_attempts = 0, locked_until = NULL
-  WHERE email IN ('superadmin@tickethotel.com', 'admin@grandbleu.com', 'thomas@grandbleu.com', 'sophie@grandbleu.com')
-`)
-console.log('✅ Comptes déverrouillés')
+async function initDB() {
+  try {
+    const sql = fs.readFileSync(path.join(__dirname, 'db/init.sql'), 'utf8')
+    await pool.query(sql)
+    console.log('✅ Base de donnees initialisee')
+  } catch (e) {
+    console.log('ℹ️ Init info:', e.message)
+  }
+  try {
+    const hash = await bcrypt.hash('password', 10)
+    await pool.query(
+      `UPDATE users SET password_hash = $1, login_attempts = 0, locked_until = NULL
+       WHERE email IN ('superadmin@tickethotel.com', 'admin@grandbleu.com', 'thomas@grandbleu.com', 'sophie@grandbleu.com')`,
+      [hash]
+    )
+    console.log('✅ Mots de passe et comptes mis a jour')
+  } catch (e) {
+    console.log('❌ Erreur update:', e.message)
+  }
+}
+
 async function start() {
   await initDB()
   app.listen(PORT, () => console.log(`🚀 TicketHotel API sur http://localhost:${PORT}`))
 }
-
-
 
 start()
