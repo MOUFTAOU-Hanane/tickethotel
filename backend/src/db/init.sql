@@ -149,10 +149,10 @@ ON CONFLICT DO NOTHING;
 
 -- Users (mot de passe = "password")
 INSERT INTO users (id, email, password_hash, first_name, last_name, role, hotel_id, skills) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'superadmin@tickethotel.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Super', 'Admin', 'SuperAdmin', NULL, '{}'),
-  ('00000000-0000-0000-0000-000000000002', 'admin@grandbleu.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Sarah', 'Connor', 'Admin', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '{}'),
-  ('00000000-0000-0000-0000-000000000003', 'thomas@grandbleu.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Thomas', 'Dubois', 'Technicien', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '{"Plomberie","CVC"}'),
-  ('00000000-0000-0000-0000-000000000004', 'sophie@grandbleu.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Sophie', 'Martin', 'Technicien', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '{"Electricite","Reseau"}')
+  ('00000000-0000-0000-0000-000000000001', 'superadmin@tickethotel.com', '$2a$10$mod5UuNNOGaGhR7TslG34.HgG0s8n3ncWJS5LWArO.rvtVxIvOx7W', 'Super', 'Admin', 'SuperAdmin', NULL, '{}'),
+  ('00000000-0000-0000-0000-000000000002', 'admin@grandbleu.com', '$2a$10$mod5UuNNOGaGhR7TslG34.HgG0s8n3ncWJS5LWArO.rvtVxIvOx7W', 'Sarah', 'Connor', 'Admin', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '{}'),
+  ('00000000-0000-0000-0000-000000000003', 'thomas@grandbleu.com', '$2a$10$mod5UuNNOGaGhR7TslG34.HgG0s8n3ncWJS5LWArO.rvtVxIvOx7W', 'Thomas', 'Dubois', 'Technicien', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '{"Plomberie","CVC"}'),
+  ('00000000-0000-0000-0000-000000000004', 'sophie@grandbleu.com', '$2a$10$mod5UuNNOGaGhR7TslG34.HgG0s8n3ncWJS5LWArO.rvtVxIvOx7W', 'Sophie', 'Martin', 'Technicien', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '{"Electricite","Reseau"}')
 ON CONFLICT DO NOTHING;
 
 -- Categories
