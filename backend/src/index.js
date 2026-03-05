@@ -35,9 +35,9 @@ async function initDB() {
 
   try {
     await pool.query(`
-      UPDATE users SET password_hash = '$2a$10$mod5UuNNOGaGhR7TslG34.HgG0s8n3ncWJS5LWArO.rvtVxIvOx7W'
-      WHERE email IN ('superadmin@tickethotel.com', 'admin@grandbleu.com', 'thomas@grandbleu.com', 'sophie@grandbleu.com')
-    `)
+  UPDATE users SET password_hash = TRIM('$2a$10$mod5UuNNOGaGhR7TslG34.HgG0s8n3ncWJS5LWArO.rvtVxIvOx7W')
+  WHERE email IN ('superadmin@tickethotel.com', 'admin@grandbleu.com', 'thomas@grandbleu.com', 'sophie@grandbleu.com')
+`)
     console.log('✅ Mots de passe mis a jour')
   } catch (e) {
     console.log('❌ Erreur UPDATE passwords:', e.message)
