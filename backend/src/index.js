@@ -24,27 +24,11 @@ app.use((err, req, res, next) => { console.error(err); res.status(500).json({ er
 
 const PORT = process.env.PORT || 3000
 
-async function initDB() {
-  try {
-    const sql = fs.readFileSync(path.join(__dirname, 'db/init.sql'), 'utf8')
-    await pool.query(sql)
-    console.log('✅ Base de donnees initialisees')
-  } catch (e) {
-    console.log('ℹ️ Init info:', e.message)
-  }
-
-  try {
-    const bcrypt = require('bcryptjs')
-    const hash = await bcrypt.hash('password', 10)
-    await pool.query(`
-      UPDATE users SET password_hash = $1
-      WHERE email IN ('superadmin@tickethotel.com', 'admin@grandbleu.com', 'thomas@grandbleu.com', 'sophie@grandbleu.com')
-    `, [hash])
-    console.log('✅ Mots de passe mis a jour avec hash:', hash)
-  } catch (e) {
-    console.log('❌ Erreur:', e.message)
-  }
-}
+await pool.query(`
+  UPDATE users SET login_attempts = 0, locked_until = NULL
+  WHERE email IN ('superadmin@tickethotel.com', 'admin@grandbleu.com', 'thomas@grandbleu.com', 'sophie@grandbleu.com')
+`)
+console.log('✅ Comptes déverrouillés')
 async function start() {
   await initDB()
   app.listen(PORT, () => console.log(`🚀 TicketHotel API sur http://localhost:${PORT}`))
