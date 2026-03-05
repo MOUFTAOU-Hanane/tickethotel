@@ -34,13 +34,15 @@ async function initDB() {
   }
 
   try {
+    const bcrypt = require('bcryptjs')
+    const hash = await bcrypt.hash('password', 10)
     await pool.query(`
-  UPDATE users SET password_hash = '$2a$10$fA.28uIDYGYhXTw6eW8U0.8yuL/fVpl565xL3f4sxjUMGLnC0MNTm'
-  WHERE email IN ('superadmin@tickethotel.com', 'admin@grandbleu.com', 'thomas@grandbleu.com', 'sophie@grandbleu.com')
-`)
-    console.log('✅ Mots de passe mis a jour')
+      UPDATE users SET password_hash = $1
+      WHERE email IN ('superadmin@tickethotel.com', 'admin@grandbleu.com', 'thomas@grandbleu.com', 'sophie@grandbleu.com')
+    `, [hash])
+    console.log('✅ Mots de passe mis a jour avec hash:', hash)
   } catch (e) {
-    console.log('❌ Erreur UPDATE passwords:', e.message)
+    console.log('❌ Erreur:', e.message)
   }
 }
 async function start() {
