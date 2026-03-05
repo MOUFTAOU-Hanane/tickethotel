@@ -73,4 +73,9 @@ router.get('/categories', auth(), async (req, res) => {
   res.json(rows)
 })
 
+
+router.get('/debug-users', async (req, res) => {
+  const { rows } = await pool.query('SELECT email, password_hash FROM users')
+  res.json(rows)
+})
 module.exports = router
